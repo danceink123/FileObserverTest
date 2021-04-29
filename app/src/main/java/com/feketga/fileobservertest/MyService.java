@@ -7,6 +7,14 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 public class MyService extends Service {
 
     public static final String ACTION_COMMAND_START = "com.feketga.fileobservertest.intent.ACTION_COMMAND_START";
@@ -18,6 +26,7 @@ public class MyService extends Service {
 
     public static final String ACTION_EVENT = "com.feketga.fileobservertest.intent.ACTION_EVENT";
     public static final String EXTRA_EVENT_DUMP = "com.feketga.fileobservertest.intent.EXTRA_EVENT_DUMP";
+    public static final String EXTRA_EVENT_FILENAME = "com.feketga.fileobservertest.intent.EXTRA_EVENT_FILENAME";
 
     private String mObservedPath;
     private FileObserver mFileObserver;
@@ -35,9 +44,9 @@ public class MyService extends Service {
                 stopObserving();
             } else if (ACTION_COMMAND_CLEAR.equals(intent.getAction())) {
                 mEventDump = new StringBuilder();
-                addToDumpAndSend("CLEARED\n");
+                //addToDumpAndSend("CLEARED\n");
             } else if (ACTION_COMMAND_DUMP.equals(intent.getAction())) {
-                sendDump();
+                sendDump(null);
             }
         }
 
@@ -70,68 +79,68 @@ public class MyService extends Service {
 
                 switch (event) {
                     case FileObserver.ACCESS:
-                        addToDumpAndSend("EVENT: ACCESS: File: " + path + "\n");
+                        //addToDumpAndSend("ACCESS:" + path);
                         break;
                     case FileObserver.MODIFY:
-                        addToDumpAndSend("EVENT: MODIFY: File: " + path + "\n");
+                        //addToDumpAndSend("MODIFY:" + path);
                         break;
                     case FileObserver.CREATE:
-                        addToDumpAndSend("EVENT: CREATE: File: " + path + "\n");
+                        addToDumpAndSend("CREATE:" + path);
                         break;
                     case FileObserver.CLOSE_WRITE:
-                        addToDumpAndSend("EVENT: CLOSE_WRITE: File: " + path + "\n");
+                        addToDumpAndSend("CLOSE_WRITE:" + path);
                         break;
                     case FileObserver.CLOSE_NOWRITE:
-                        addToDumpAndSend("EVENT: CLOSE_NOWRITE: File: " + path + "\n");
+                        //addToDumpAndSend("CLOSE_NOWRITE:" + path);
                         break;
                     case FileObserver.OPEN:
-                        addToDumpAndSend("EVENT: OPEN: File: " + path + "\n");
+                        //addToDumpAndSend("OPEN:" + path);
                         break;
                     case FileObserver.MOVED_TO:
-                        addToDumpAndSend("EVENT: MOVED_TO: File: " + path + "\n");
+                        //addToDumpAndSend("MOVED_TO:" + path);
                         break;
                     case FileObserver.ATTRIB:
-                        addToDumpAndSend("EVENT: ATTRIB: File: " + path + "\n");
+                        //addToDumpAndSend("ATTRIB:" + path);
                         break;
                     case FileObserver.MOVED_FROM:
-                        addToDumpAndSend("EVENT: MOVED_FROM: File: " + path + "\n");
+                        //addToDumpAndSend("MOVED_FROM:" + path);
                         break;
                     case FileObserver.DELETE:
-                        addToDumpAndSend("EVENT: DELETE: File: " + path + "\n");
+                        //addToDumpAndSend("DELETE:" + path);
                         break;
                     case FileObserver.DELETE_SELF:
-                        addToDumpAndSend("EVENT: DELETE_SELF: File: " + path + "\n");
+                        //addToDumpAndSend("DELETE_SELF:" + path);
                         break;
                     case FileObserver.MOVE_SELF:
-                        addToDumpAndSend("EVENT: MOVE_SELF: File: " + path + "\n");
+                        //addToDumpAndSend("MOVE_SELF:" + path);
                         break;
                     default:
-                        addToDumpAndSend("EVENT: UNKNOWN (" + event + "): File: " + path + "\n");
+                        //addToDumpAndSend("UNKNOWN:" + path);
                         break;
                 }
             }
         };
 
         mFileObserver.startWatching();
-        addToDumpAndSend("START: Observing: " + mObservedPath + "\n");
+        //addToDumpAndSend("START: Observing: " + mObservedPath);
     }
 
     private void stopObserving() {
         if (mFileObserver != null) {
             mFileObserver.stopWatching();
             mFileObserver = null;
-            addToDumpAndSend("STOP: Observing: " + mObservedPath + "\n");
+            //addToDumpAndSend("STOP: Observing: " + mObservedPath);
         }
     }
 
     private void addToDumpAndSend(final String text) {
-        mEventDump.append(text);
-        sendDump();
+        //mEventDump.append(text).append("\n");
+        sendDump(text);
     }
 
-    private void sendDump() {
+    private void sendDump(String text) {
         Intent intent = new Intent(ACTION_EVENT);
-        intent.putExtra(EXTRA_EVENT_DUMP, mEventDump.toString());
+        intent.putExtra(EXTRA_EVENT_DUMP, text==null?mEventDump.toString():text);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

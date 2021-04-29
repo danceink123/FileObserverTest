@@ -1,13 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 30
+    //noinspection GradleCompatible
     buildToolsVersion "23.0.0"
 
     defaultConfig {
         applicationId "com.feketga.fileobservertest"
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
@@ -21,5 +22,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    //noinspection GradleCompatible
     compile 'com.android.support:appcompat-v7:22.2.1'
 }
