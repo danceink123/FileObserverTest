@@ -19,6 +19,10 @@ import android.widget.TextView;
 
 
 import com.feketga.fileobservertest.R;
+import com.wow.carlauncher.widget.ty.TyEventInfo;
+import com.wow.dudu.commonBridge.warp.ex.s2c.S2CTirePressureInfo;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -432,7 +436,16 @@ public class MainActivity extends AppCompatActivity {
             if (bArr != null) {
                 try {
                     if (bArr.length == 8) {
-                        TyreInfoBean g2 = getTyreInfoBean(bArr);
+                        TyreInfoBean tyreInfoBean = getTyreInfoBean(bArr);
+                        if (tyreInfoBean.getPosition() == 1) {
+                            EventBus.getDefault().post(new TyEventInfo().setlFTirePressure(Float.parseFloat(tyreInfoBean.getTemperature())).setlFTemp(Integer.getInteger(tyreInfoBean.getTemperature())));
+                        } else if (tyreInfoBean.getPosition() == 2) {
+                            EventBus.getDefault().post(new TyEventInfo().setrFTirePressure(Float.parseFloat(tyreInfoBean.getTemperature())).setrFTemp(Integer.getInteger(tyreInfoBean.getTemperature())));
+                        } else if (tyreInfoBean.getPosition() == 3) {
+                            EventBus.getDefault().post(new TyEventInfo().setlBTirePressure(Float.parseFloat(tyreInfoBean.getTemperature())).setlBTemp(Integer.getInteger(tyreInfoBean.getTemperature())));
+                        } else if (tyreInfoBean.getPosition() == 4) {
+                            EventBus.getDefault().post(new TyEventInfo().setrBTirePressure(Float.parseFloat(tyreInfoBean.getTemperature())).setrBTemp(Integer.getInteger(tyreInfoBean.getTemperature())));
+                        }
                     }
                 } catch (Throwable th) {
                     throw th;

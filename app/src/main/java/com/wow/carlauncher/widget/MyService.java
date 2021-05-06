@@ -79,7 +79,60 @@ public class MyService extends Service {
                 sendDump(null);
             }
         }
+        if (Build.VERSION.SDK_INT >= 26) {
+            NotificationChannel notificationChannel = new NotificationChannel(TAG, "嘟嘟桌面扩展服务", NotificationManager.IMPORTANCE_HIGH);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(SupportMenu.CATEGORY_MASK);
+            notificationChannel.setShowBadge(true);
+            notificationChannel.setDescription("嘟嘟桌面扩展服务");
+            notificationChannel.setLockscreenVisibility(1);
+            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).createNotificationChannel(notificationChannel);
+            startForeground(1, new Notification.Builder(this).setChannelId(TAG).setContentTitle("嘟嘟桌面扩展服务").setContentText("服务运行中...").setWhen(System.currentTimeMillis()).setSmallIcon(R.mipmap.ic_launcher).setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)).build());
+        }
+        this.duduBridgeServer = new DuduBridgeServer() {
 
+            @Override
+            public BaseWarp decodeJson(short s, String str) {
+                return null;
+            }
+
+            @Override
+            public String encodedJson(BaseWarp baseWarp) {
+                return null;
+            }
+
+            @Override
+            public void connectSuccess() {
+                addToDumpAndSend("嘟嘟主服务绑定成功");
+                MyService.this.connected = true;
+            }
+
+            @Override
+            public BaseWarp handleAction(BaseWarp baseWarp) throws DuduBridgeRunException {
+                if (!MyService.this.checkSuccess) {
+                    return null;
+                }
+                if (baseWarp instanceof C2SExCmd) {
+                    EventBus eventBus = EventBus.getDefault();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("CMD：");
+                    C2SExCmd c2SExCmd = (C2SExCmd) baseWarp;
+                    sb.append(c2SExCmd.getExcmd());
+                    eventBus.post(new CSMEventAddMessage(sb.toString()));
+                    int excmd = c2SExCmd.getExcmd();
+                    if (excmd == 100) {
+                        EventBus.getDefault().post(new CSMEventAddMessage("连接胎压指令！"));
+                        try {
+                            MyService.this.duduBridgeServer.notice(new S2CTirePressureState().setReady(true));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+//                        TaskExecutor.self().run(LambdaMainService.INSTANCE);
+                    }
+                }
+                return null;
+            }
+        };
         return START_STICKY;
     }
 
@@ -104,17 +157,12 @@ public class MyService extends Service {
 
             @Override
             public BaseWarp decodeJson(short s, String str) {
-                return ExWarpConvert.decodeJson(s, str, new FromJsonInterface() {
-                    @Override // com.wow.dudu.commonBridge.warp.FromJsonInterface
-                    public <T extends BaseWarp> T fromJson(String str, Class<T> cls) {
-                        return (T) ((BaseWarp) GsonUtil.getGson().fromJson(str, (Class) cls));
-                    }
-                });
+                return null;
             }
 
             @Override
             public String encodedJson(BaseWarp baseWarp) {
-                return GsonUtil.getGson().toJson(baseWarp);
+                return null;
             }
 
             @Override
