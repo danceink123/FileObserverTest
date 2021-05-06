@@ -1,1 +1,2 @@
+include ':app:dudu'
 include ':app'
