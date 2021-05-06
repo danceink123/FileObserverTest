@@ -1,7 +1,9 @@
-package com.feketga.fileobservertest;
+package com.wow.carlauncher.widget;
 
 import android.content.Context;
 import android.content.res.Resources;
+
+import com.feketga.fileobservertest.R;
 
 import java.io.Serializable;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.feketga.fileobservertest;
+package com.wow.carlauncher.widget;
 
 import java.math.BigDecimal;
 import java.security.InvalidParameterException;
